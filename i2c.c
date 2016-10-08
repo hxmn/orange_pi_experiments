@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
     mvaddstr(12, 0, "Temperature");
     mvaddstr(14, 0, "?");
     mvaddstr(16, 0, "Resistor");
+    mvaddstr(18, 0, "Output");
+
     refresh();
     fd = open(dev, O_RDWR);
     if (fd < 0) {
@@ -48,7 +50,7 @@ int main(int argc, char **argv) {
     aout = 0;
     while (1) {
         for (i = 0; i < 4; i++) {
-            command[1] = aout++ * 0;
+//            command[1] = 0;
             command[0] = 0x40 | ((i + 1) & 0x03); // output enable | read input i
             r = write(fd, &command, 2);
             usleep(delay);
@@ -61,6 +63,10 @@ int main(int argc, char **argv) {
 
             sprintf(str, "%3d", value[i]);
             mvaddstr(10 + i + i, 12, str);
+
+            sprintf(str, "%3d", command[1]);
+            mvaddstr(18, 12, str);
+
             value[i] = value[i] / 4;
             move(10 + i + i, 16);
 
@@ -76,7 +82,7 @@ int main(int argc, char **argv) {
 
         key = getch();
         if (key == 43) {
-            command[1]++;
+            command[1]+=10;
         } else if (key == 45) {
             command[1]--;
         } else if (key > -1) {
