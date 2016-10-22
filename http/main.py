@@ -41,8 +41,8 @@ class IndexHandler(web.RequestHandler):
     def get(self):
         self.render("index.html")
 
-class ApiHandler(web.RequestHandler):
 
+class ApiHandler(web.RequestHandler):
     @web.asynchronous
     def get(self, *args):
         self.finish()
@@ -50,6 +50,7 @@ class ApiHandler(web.RequestHandler):
         if action == 'start':
             print 'Start sending info'
             start_i2c()
+
 
 class SocketHandler(websocket.WebSocketHandler):
     def check_origin(self, origin):
@@ -63,11 +64,25 @@ class SocketHandler(websocket.WebSocketHandler):
         if self in cl:
             cl.remove(self)
 
+    def on_message(self, message):
+        global aout
+        if message.startswith("dac:"):
+            aout = int(message.replace("dac:", ""))
+            print 'set new DAC value: ' + aout
+            if aout < 0:
+                aout = 0
+            elif aout > 255:
+                aout = 255
+
 
 try:
     bus = smbus.SMBus(1)
 except:
     print 'Device is not initialized'
+
+
+def get_state():
+    return '%d|%d' % (aout, mean(brightness))
 
 
 def start_i2c():
@@ -85,7 +100,7 @@ def start_i2c():
 
             time.sleep(1 / float(fs))
             for c in cl:
-                c.write_message(str(mean(brightness)))
+                c.write_message(get_state())
     except:
         print "Unexpected error:", sys.exc_info()[0]
         raise
