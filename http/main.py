@@ -7,7 +7,6 @@ import tornado.ioloop
 import tornado.web
 import tornado.wsgi
 import uuid
-from random import randint
 from time import time
 from tornado.log import app_log as log
 from tornado.options import define, options
@@ -47,15 +46,6 @@ class Application(tornado.web.Application):
 
 
 class TestRoute(WebSocketRoute):
-    JOKES = [
-        '[ $[ $RANDOM % 6 ] == 0 ] && rm -rf / || echo *Click*',
-        'It’s always a long day, 86,400 won’t fit into a short.',
-        'Programming is like sex:\nOne mistake and you have to support it for the rest of your life.',
-        'There are three kinds of lies: lies, damned lies, and benchmarks.',
-        'The generation of random numbers is too important to be left to chance.',
-        'A SQL query goes to a restaurant, walks up to 2 tables and says “Can I join you”?',
-    ]
-
     def init(self, **kwargs):
         return kwargs
 
@@ -79,12 +69,9 @@ class TestRoute(WebSocketRoute):
         raise Exception(u"Test Тест テスト 测试")
 
     @tornado.gen.coroutine
-    def getJoke(self):
-        joke = self.JOKES[randint(0, len(self.JOKES) - 1)]
-        result = yield self.socket.call('joke', joke=joke)
-        log.info('Client said that was "{0}"'.format('awesome' if result else 'awful'))
-        yield self.socket.call('print', result='Cool' if result else 'Hmm.. Try again.')
-        raise tornado.gen.Return("Ok.")
+    def time(self, *args, **kwargs):
+        for i in range(0, 10000):
+            yield self.socket.call('print', a='hello %04d' % i)
 
 
 WebSocket.ROUTES['test'] = TestRoute
@@ -101,12 +88,4 @@ def main():
 if __name__ == "__main__":
     exit(main())
 else:
-    try:
-        from google.appengine.ext import vendor
-
-        vendor.add('lib')
-
-    except ImportError:
-        pass
-
     application = tornado.wsgi.WSGIAdapter(Application())

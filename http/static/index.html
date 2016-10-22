@@ -19,17 +19,15 @@
             }
         }
 
+        RPC.addRoute('print', onResponse);
+
         function test() {
-            var fn = document.getElementById('func').value;
+            var fn = 'test.time';
             var args = JSON.parse(document.getElementById('args').value);
             RPC.call(fn, args).then(onResponse, function (error) {
                 alert(error.type + '("' + error.message + '")');
             }).done();
         }
-        RPC.addRoute('print', onResponse);
-        RPC.addRoute('joke', function (data) {
-            return confirm(data.joke + '\n\nThat was funny?');
-        });
     </script>
     <link rel="stylesheet" href="just-grid.css"/>
     <style>
@@ -84,33 +82,9 @@
             <pre id="response"></pre>
         </div>
     </div>
-    <div class="row" id="examples"></div>
 </div>
 <script>
-    examples = {
-        'test': '{"key": "value"}',
-        'test.delayed': '{"delay": 2}',
-        'test.exception': '{"Not":"existing method"}',
-        'test.getEpoch': '{}',
-        'test._secure_method': '{}',
-        'test.requiredArgument': '{}',
-        'test.getJoke': '{}',
-        'test.exc': '{}'
-    };
-    var examplesContainer = document.getElementById('examples');
-    for (var func in examples) {
-        var args = examples[func];
-        var btn = document.createElement('button');
-        btn.setAttribute('class', 'example');
-        btn.func = func;
-        btn.args = args;
-        btn.innerHTML = func;
-        btn.onclick = function () {
-            document.getElementById('func').setAttribute('value', this.func);
-            document.getElementById('args').setAttribute('value', this.args);
-        };
-        examplesContainer.appendChild(btn);
-    }
+
 </script>
 </body>
 </html>
