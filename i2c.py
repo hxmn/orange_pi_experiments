@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # coding=utf-8
 import locale
-from math import sqrt
 
+from math import sqrt
 import smbus
 import time
 import curses

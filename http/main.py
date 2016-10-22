@@ -1,16 +1,55 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import json
+import locale
+import sys
+import time
+from math import sqrt
 from tornado import websocket, web, ioloop
 
+import smbus
+
+locale.setlocale(locale.LC_ALL, '')
 cl = []
+fs = 25
+measure_time = 1000  # milliseconds
+calibration = False
+
+brightness = [0] * (measure_time / fs)
+pointer = 0
+
+low_brightness = 0
+high_brightness = 0
+total_count = 0
+aout = 0
+
+
+def length(a):
+    return sum([x > 0 for x in a])
+
+
+def mean(a):
+    return sum(a) / length(a)
+
+
+def std(a):
+    m = mean(a)
+    return sqrt(sum([(x - m) * (x - m) for x in a])) / length(a)
 
 
 class IndexHandler(web.RequestHandler):
     def get(self):
         self.render("index.html")
 
+class ApiHandler(web.RequestHandler):
+
+    @web.asynchronous
+    def get(self, *args):
+        self.finish()
+        action = self.get_argument("action")
+        if action == 'start':
+            print 'Start sending info'
+            start_i2c()
 
 class SocketHandler(websocket.WebSocketHandler):
     def check_origin(self, origin):
@@ -25,21 +64,31 @@ class SocketHandler(websocket.WebSocketHandler):
             cl.remove(self)
 
 
-class ApiHandler(web.RequestHandler):
-    @web.asynchronous
-    def get(self, *args):
-        self.finish()
-        id = self.get_argument("id")
-        value = self.get_argument("value")
-        data = {"id": id, "value": value}
-        data = json.dumps(data)
-        for c in cl:
-            for k in range(0, 1000):
-                c.write_message(str(k))
+try:
+    bus = smbus.SMBus(1)
+except:
+    print 'Device is not initialized'
 
-    @web.asynchronous
-    def post(self):
-        pass
+
+def start_i2c():
+    global total_count, pointer
+    try:
+        while True:
+            total_count += 1
+            for a in range(0, 4):
+                bus.write_byte_data(0x48, 0x40 | ((a + 1) & 0x03), aout)
+                v = bus.read_byte(0x48)
+                if a == 0:  # brightness
+                    brightness[pointer] = v
+                    pointer += 1
+                    pointer %= measure_time / fs
+
+            time.sleep(1 / float(fs))
+            for c in cl:
+                c.write_message(str(mean(brightness)))
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
+        raise
 
 
 app = web.Application([

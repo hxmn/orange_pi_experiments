@@ -42,7 +42,7 @@
     </table>
 </div>
 <script>
-    var ws = new WebSocket('ws://localhost:8888/ws');
+    var ws = new WebSocket('ws://' + window.location.hostname + ':8888/ws');
     var $message = $('#message');
 
     var $br_val = $('#br_val');
