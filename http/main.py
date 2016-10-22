@@ -65,14 +65,20 @@ class TestRoute(WebSocketRoute):
     def _secure_method(self):
         return 'WTF???'
 
-    def exc(self):
-        raise Exception(u"Test Тест テスト 测试")
-
     @tornado.gen.coroutine
     def time(self, *args, **kwargs):
         for i in range(0, 10000):
             yield self.socket.call('print', a='hello %04d' % i)
 
+class EchoWebSocket(tornado.websocket.WebSocketHandler):
+    def open(self):
+        print("WebSocket opened")
+
+    def on_message(self, message):
+        self.write_message(u"You said: " + message)
+
+    def on_close(self):
+        print("WebSocket closed")
 
 WebSocket.ROUTES['test'] = TestRoute
 
