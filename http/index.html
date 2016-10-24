@@ -28,6 +28,7 @@
     <h1>Orange PI Dashboard</h1>
     <hr>
     Статус подключения: <span id="message">No connection</span>
+    <button class="btn btn-primary" type="button" onclick="start()">Start</button>
     <hr>
     <h3>Показания датчиков</h3>
     <table class="table table-striped table-bordered table-condensed">
@@ -86,6 +87,7 @@
         var d = ev.data.split("|");
         $dac_val.text(d[0]);
         $br_val.text(d[1]);
+        $('#br_dev').text(d[2]);
         if ($dac_inp.val() != $dac_val.text()) {
             $dac_inp.val($dac_val.text());
         }
@@ -101,6 +103,15 @@
 
     function change_dac(delta) {
         ws.send("dac:" + (+$dac_val.text() + delta));
+    }
+
+    function start() {
+        $.ajax({
+            url: 'api?action=start',
+            success: function () {
+                ws = new WebSocket('ws://' + window.location.hostname + ':8888/ws');
+            }
+        })
     }
 
 </script>

@@ -3,6 +3,7 @@
 
 import locale
 import sys
+import threading
 import time
 from math import sqrt
 from tornado import websocket, web, ioloop
@@ -49,7 +50,8 @@ class ApiHandler(web.RequestHandler):
         action = self.get_argument("action")
         if action == 'start':
             print 'Start sending info'
-            start_i2c()
+            t = threading.Thread(target=start_i2c, args=[])
+            t.start()
 
 
 class SocketHandler(websocket.WebSocketHandler):
@@ -68,7 +70,7 @@ class SocketHandler(websocket.WebSocketHandler):
         global aout
         if message.startswith("dac:"):
             aout = int(message.replace("dac:", ""))
-            print 'set new DAC value: ' + aout
+            print 'set new DAC value: ' + str(aout)
             if aout < 0:
                 aout = 0
             elif aout > 255:
@@ -82,7 +84,7 @@ except:
 
 
 def get_state():
-    return '%d|%d' % (aout, mean(brightness))
+    return '%d|%d|%d' % (aout, mean(brightness), std(brightness))
 
 
 def start_i2c():
