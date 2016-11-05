@@ -69,9 +69,9 @@
                 <button id="dac_plus1" class="btn btn-primary space" type="button" onclick="change_dac(1)">+1</button>
                 <button id="dac_plus5" class="btn btn-primary space" type="button" onclick="change_dac(5)">+5</button>
             </div>
-            <div class="input-group">
-                <button class="btn btn-primary space" type="button" onclick="direction('left');">Left</button>
-                <button class="btn btn-primary space" type="button" onclick="direction('right');" >Right</button>
+            <div class="input-group" style="padding-top: 30px;">
+                <button class="btn btn-primary space dirs" type="button" onclick="direction('1');">Left</button>
+                <button class="btn btn-primary space dirs" type="button" onclick="direction('-1');">Right</button>
             </div>
         </div>
     </div>
@@ -119,7 +119,11 @@
     }
 
     function direction(msg) {
-        ws.send(msg);
+        ws.send('steps:' + msg);
+        $('#dirs').disable();
+        setTimeout(function () {
+            $('#dirs').enable();
+        }, Math.abs(msg) * 7 * 20);
     }
 
 </script>

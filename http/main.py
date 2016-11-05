@@ -77,10 +77,8 @@ class SocketHandler(websocket.WebSocketHandler):
                 aout = 0
             elif aout > 255:
                 aout = 255
-        elif message.startswith("right"):
-            os.system("/root/bin/right.sh")
-        elif message.startswith("left"):
-            os.system("/root/bin/left.sh")
+        elif message.startswith("steps:"):
+            os.system("/root/bin/move.sh " + message.replace("steps:", ""))
 
 
 try:
