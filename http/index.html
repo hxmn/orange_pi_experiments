@@ -118,14 +118,15 @@
     };
 
     function change_dac(delta) {
-        var jerk = parseInt($('#dac_jerk').text());
+        var jerk = parseInt($('#dac_jerk').val());
+        var val = parseInt($dac_val.text());
         if (jerk > 0) {
             if (delta < 0)
-                ws.send("dac:" + (+$dac_val.text() + delta - jerk));
+                ws.send("dac:" + (val + delta - jerk));
             else
-                ws.send("dac:" + (+$dac_val.text() + delta + jerk));
+                ws.send("dac:" + (val + delta + jerk));
         }
-        ws.send("dac:" + (+$dac_val.text() + delta));
+        ws.send("dac:" + (val + delta));
     }
 
     function start() {
