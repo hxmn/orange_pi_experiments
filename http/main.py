@@ -78,7 +78,7 @@ class SocketHandler(websocket.WebSocketHandler):
             elif aout > 255:
                 aout = 255
         elif message.startswith("steps:"):
-            os.system("/root/bin/move.sh " + message.replace("steps:", ""))
+            os.system("/root/http/move.sh " + message.replace("steps:", ""))
 
 
 try:

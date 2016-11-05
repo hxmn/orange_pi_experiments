@@ -59,8 +59,9 @@
         </tr>
     </table>
     <h3>Управление ЦАП</h3>
-    <div class="form-group">
-        <div class="col-lg-6">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <!--<div class="col-lg-6">-->
             <div class="input-group">
                 <input id="dac_inp" type="text" class="form-control" style="width:70px;" value="0">
                 <button id="dac_set" class="btn btn-primary space" type="button" onclick="change_dac(0)">Set</button>
@@ -69,10 +70,21 @@
                 <button id="dac_plus1" class="btn btn-primary space" type="button" onclick="change_dac(1)">+1</button>
                 <button id="dac_plus5" class="btn btn-primary space" type="button" onclick="change_dac(5)">+5</button>
             </div>
-            <div class="input-group" style="padding-top: 30px;">
-                <button class="btn btn-primary space dirs" type="button" onclick="direction('1');">Left</button>
-                <button class="btn btn-primary space dirs" type="button" onclick="direction('-1');">Right</button>
-            </div>
+            <!--</div>-->
+        </div>
+        <div class="form-group">
+            <label for="dac_jerk" class="col-sm-2 control-label">Подергивание</label>
+            <input id="dac_jerk" type="text" class="form-control" style="width:70px;" value="0">
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <h3>Управление положением диска</h3>
+    <div class="form-group">
+        <div class="input-group">
+            <input id="steps" type="text" class="form-control" style="width:70px;" value="1">
+            <button class="btn btn-primary space dirs" type="button" onclick="direction('1');">Left</button>
+            <button class="btn btn-primary space dirs" type="button" onclick="direction('-1');">Right</button>
         </div>
     </div>
 </div>
@@ -106,6 +118,13 @@
     };
 
     function change_dac(delta) {
+        var jerk = parseInt($('#dac_jerk').text());
+        if (jerk > 0) {
+            if (delta < 0)
+                ws.send("dac:" + (+$dac_val.text() + delta - jerk));
+            else
+                ws.send("dac:" + (+$dac_val.text() + delta + jerk));
+        }
         ws.send("dac:" + (+$dac_val.text() + delta));
     }
 
@@ -119,10 +138,11 @@
     }
 
     function direction(msg) {
+        msg = parseInt(msg) * parseInt($('#steps').val());
         ws.send('steps:' + msg);
-        $('#dirs').disable();
+        $('.dirs').prop("disabled", true);
         setTimeout(function () {
-            $('#dirs').enable();
+            $('.dirs').prop("disabled", false);
         }, Math.abs(msg) * 7 * 20);
     }
 
