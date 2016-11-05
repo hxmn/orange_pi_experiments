@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import locale
+import os
 import sys
 import threading
 import time
@@ -68,6 +69,7 @@ class SocketHandler(websocket.WebSocketHandler):
 
     def on_message(self, message):
         global aout
+        print message
         if message.startswith("dac:"):
             aout = int(message.replace("dac:", ""))
             print 'set new DAC value: ' + str(aout)
@@ -75,6 +77,10 @@ class SocketHandler(websocket.WebSocketHandler):
                 aout = 0
             elif aout > 255:
                 aout = 255
+        elif message.startswith("right"):
+            os.system("/root/bin/right.sh")
+        elif message.startswith("left"):
+            os.system("/root/bin/left.sh")
 
 
 try:
