@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Simple script to try using GPIO
+
 gpio mode 25 out
 
 delay=".02"
