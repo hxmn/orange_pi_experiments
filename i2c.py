@@ -12,6 +12,8 @@ import sys
 locale.setlocale(locale.LC_ALL, '')
 
 
+# CLI experiments
+
 # 2014-08-26 PCF8591-x.py
 # Connect Pi 3V3 - VCC, Ground - Ground, SDA - SDA, SCL - SCL.
 # ./PCF8591-x.py
