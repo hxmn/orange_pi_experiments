@@ -7,9 +7,9 @@ import sys
 import threading
 import time
 from math import sqrt
-from tornado import websocket, web, ioloop
 
 import smbus
+from tornado import websocket, web, ioloop
 
 locale.setlocale(locale.LC_ALL, '')
 cl = []
